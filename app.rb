@@ -16,19 +16,20 @@ module LinuxSensors
 	class Core
 		def self.turn_ac_on?
 			turn_ac_on=false
-			`sensors`.each_line do |line|
-				if line.include?("Core")
-					line_temp = line.split("+")[1].split("°")[0].to_f 
-					if line_temp.to_f > 70
-						turn_ac_on=true
-					end
-				end
+			`sensors`.each_line do |line| 
+				turn_ac_on = true if (line.include?("Core") && (line.split("+")[1].split("°")[0].to_f > 72)) 
 			end
-			return turn_ac_on
+			turn_ac_on
 		end
 	end
 end
 
-
-IFTTT::Trigger.event('office_cold') unless LinuxSensors::Core.turn_ac_on?
-IFTTT::Trigger.event('office_hot') if LinuxSensors::Core.turn_ac_on?
+last_ac_status=false
+loop do
+	ac_status=LinuxSensors::Core.turn_ac_on?
+	puts "AC: #{ac_status}"
+	IFTTT::Trigger.event('office_cold') unless ac_status
+	IFTTT::Trigger.event('office_hot') if ac_status
+	sleep 300 unless ac_status
+	sleep 30 if ac_status
+end
