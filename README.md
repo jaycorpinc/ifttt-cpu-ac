@@ -6,6 +6,6 @@ It scans my laptops CPUs internal temp sensor, if my laptop is running hot, turn
 If the air conditioner is turned on, it checks the core temperatures every 30s to see if it is ready to turn the air conditioner off. If the AC is off, it only checks the cores to see if it needs to be turned on every five minutes.
 
 Usage:
-ruby app.rb start
-ruby app.rb restart
-ruby app.rb stop
+`ruby app.rb start`
+`ruby app.rb restart`
+`ruby app.rb stop`
