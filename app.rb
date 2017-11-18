@@ -1,10 +1,11 @@
 require 'rubygems'
 require 'httparty'
+require 'daemons'
 
 module IFTTT
 	class Trigger
 			def self.event event_name
-				key=''
+				key=ENV['IFTTT_KEY']
 				url="https://maker.ifttt.com/trigger/#{event_name}/with/key/#{key}"
 				HTTParty.get(url)
 			end
@@ -24,12 +25,13 @@ module LinuxSensors
 	end
 end
 
-last_ac_status=false
-loop do
-	ac_status=LinuxSensors::Core.turn_ac_on?
-	puts "AC: #{ac_status}"
-	IFTTT::Trigger.event('office_cold') unless ac_status
-	IFTTT::Trigger.event('office_hot') if ac_status
-	sleep 300 unless ac_status
-	sleep 30 if ac_status
-end
+Daemons.run_proc('proctemp.rb') do
+	loop do
+		ac_status=LinuxSensors::Core.turn_ac_on?
+		puts "AC: #{ac_status}"
+		IFTTT::Trigger.event('office_cold') unless ac_status
+		IFTTT::Trigger.event('office_hot') if ac_status
+		sleep 300 unless ac_status
+		sleep 30 if ac_status
+	end
+end	
