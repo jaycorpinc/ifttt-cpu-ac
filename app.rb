@@ -12,7 +12,6 @@ module IFTTT
 	end
 end
 
-
 module LinuxSensors
 	class Core
 		def self.turn_ac_on?
